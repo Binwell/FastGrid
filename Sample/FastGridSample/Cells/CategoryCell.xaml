@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<fastGrid:FastGridCell
+    xmlns:fastGrid="clr-namespace:Binwell.Controls.FastGrid.FastGrid;assembly=Binwell.Controls.FastGrid"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="FastGridSample.Cells.CategoryCell">
+    <StackLayout Padding="16" BackgroundColor="#F1F2F3">
+        <Label Text="{Binding Name}" VerticalTextAlignment="Center" FontSize="24"/>
+    </StackLayout>
+</fastGrid:FastGridCell>

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:fastGrid="clr-namespace:Binwell.Controls.FastGrid.FastGrid;assembly=Binwell.Controls.FastGrid"
+             x:Class="FastGridSample.MainPage" Title="Binwell FastGrid Sample">
+    <AbsoluteLayout>
+        <fastGrid:FastGridView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"
+                               IsPullToRefreshEnabled="True" x:Name="fastGridView"
+                               ItemsSource="{Binding ItemsSource}" 
+                               LoadMoreCommand="{Binding LoadMoreCommand}"
+                               ItemSelectedCommand="{Binding ItemSelectedCommand}"
+                               RefreshCommand="{Binding RefreshCommand}"
+                               RowSpacing="1"
+                               ColumnSpacing="1"
+                               AbsoluteLayout.LayoutBounds="0,0,1,1"
+                               AbsoluteLayout.LayoutFlags="All"
+                               />
+        <ContentView BackgroundColor="LightGray" IsVisible="{Binding IsBusy}"
+                     AbsoluteLayout.LayoutBounds="0,1,1,40"
+                     AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional"
+                     HeightRequest="40">
+            <ActivityIndicator IsRunning="true" WidthRequest="32" HeightRequest="32" 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center"
+                               />
+        </ContentView>
+    </AbsoluteLayout>
+</ContentPage>
