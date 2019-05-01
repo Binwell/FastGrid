@@ -162,19 +162,20 @@ namespace Binwell.Controls.FastGrid.Android.FastGrid
         }
 
 
+        LinearLayoutManager _layoutManager;
         void CreateRecyclerView()
         {
             _recyclerView = new ScrollRecyclerView(Application.Context);
             _recyclerView.SetClipToPadding(false);
             _adapter = new FastGridAdapter(Element.ItemsSource, _recyclerView, Element, Resources.DisplayMetrics,
                 this);
-            LinearLayoutManager layoutManager;
             if (Element.IsHorizontal)
             {
-                layoutManager =
+                _layoutManager =
                     new LinearLayoutManager(Context, OrientationHelper.Horizontal,
                         false); /*{AutoMeasureEnabled = true}*/
                 _recyclerView.HasFixedSize = true;
+                CalculateLayoutRects();
             }
             else
             {
@@ -184,13 +185,13 @@ namespace Binwell.Controls.FastGrid.Android.FastGrid
                     RecyclerView = _recyclerView
                 };
                 _recyclerView.HasFixedSize = true;
-                layoutManager = _gridLayoutManager;
+                _layoutManager = _gridLayoutManager;
                 CalculateLayoutRects();
             }
 
-            _recyclerView.SetLayoutManager(layoutManager);
+            _recyclerView.SetLayoutManager(_layoutManager);
 
-            var scrollListener = new EndlessRecyclerViewScrollListener(layoutManager, Element, _recyclerView)
+            var scrollListener = new EndlessRecyclerViewScrollListener(_layoutManager, Element, _recyclerView)
             {
                 EnableLoadMore = Element.LoadMoreCommand != null
             };
@@ -211,24 +212,29 @@ namespace Binwell.Controls.FastGrid.Android.FastGrid
 
         protected internal void CalculateLayoutRects()
         {
-            if (Element == null || Element.Width < 10 || _gridLayoutManager == null) return;
+            if (Element == null || Element.Width < 10 || _layoutManager == null) return;
 
             var itemTemplate = Element.ItemTemplateSelector;
             if (!(itemTemplate is FastGridTemplateSelector templateSelector)) return;
             templateSelector.Prepare();
-            var width = Element.Width;
-            var widths = templateSelector.DataTemplates.Select(t => t.CellSize.Width);
-            _columns = Math.Max(1, widths.Max(w => (int) (width / w)));
 
-            _gridLayoutManager.SpanCount = _columns;
-            if (_sizeLookup == null)
+            if (!Element.IsHorizontal)
             {
-                _sizeLookup = new GridSpanSizeLookup();
-                _gridLayoutManager.SetSpanSizeLookup(_sizeLookup);
-            }
+                var width = Element.Width;
+                var widths = templateSelector.DataTemplates.Select(t => t.CellSize.Width);
+                _columns = Math.Max(1, widths.Max(w => (int)(width / w)));
 
-            _sizeLookup.MaxColumns = _columns;
-            _sizeLookup.Width = width;
+                _gridLayoutManager.SpanCount = _columns;
+                if (_sizeLookup == null)
+                {
+                    _sizeLookup = new GridSpanSizeLookup();
+                    _gridLayoutManager.SetSpanSizeLookup(_sizeLookup);
+                }
+
+                _sizeLookup.MaxColumns = _columns;
+                _sizeLookup.Width = width;
+            }
+           
 
             var source = Element.ItemsSource as ICollection;
             var numberOfItems = source?.Count ?? 0;
@@ -250,7 +256,10 @@ namespace Binwell.Controls.FastGrid.Android.FastGrid
 
             var widthByPos = layoutInfo.Select(t => t.Width / density).ToList();
 
-            _sizeLookup.WidthByPos = widthByPos;
+            if (!Element.IsHorizontal)
+            {
+                _sizeLookup.WidthByPos = widthByPos;
+            }
         }
 
         public class GridSpanSizeLookup : GridLayoutManager.SpanSizeLookup
