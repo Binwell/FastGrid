@@ -10,3 +10,5 @@ Current Binwell FastGrid Features
 * Support for dynamic data adding/updating/removing, including LoadMore feature
 * Pull-to-refresh features
 
+Special thanks to:
+- [Subhan Ali](https://github.com/SubhanAli94 "Subhan Ali") for fixing horizontal orientation
