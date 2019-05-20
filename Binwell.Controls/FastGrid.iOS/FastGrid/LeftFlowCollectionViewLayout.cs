@@ -13,32 +13,33 @@ namespace Binwell.Controls.FastGrid.iOS.FastGrid
 	        if (ScrollDirection == UICollectionViewScrollDirection.Horizontal) 
 	            return attributes;
 
-	        var maxY = -1.0;
-	        var leftMargin = SectionInset.Left;
-	        var w = CollectionView.Frame.Width;
+            for (int i = 1; i < attributes.Length; ++i)
+            {
+                var currentLayoutAttributes = attributes[i];
+                var prevLayoutAttributes = attributes[i - 1];
+                var origin = prevLayoutAttributes.Frame.GetMaxX();
 
-	        foreach (var layoutAttribute in attributes)
-	        {
-	            var frame = layoutAttribute.Frame;
-	            var x = leftMargin;
+                CGRect frame = currentLayoutAttributes.Frame;
+                if (origin + MinimumInteritemSpacing + currentLayoutAttributes.Frame.Size.Width < CollectionViewContentSize.Width)
+                {
+                    frame.X = (nfloat)(origin + MinimumInteritemSpacing);
+                    currentLayoutAttributes.Frame = frame;
+                }
+                else
+                {
+                    frame.X = SectionInset.Left;
+                    currentLayoutAttributes.Frame = frame;
+                }
 
-	            if (x > SectionInset.Left && leftMargin + frame.Width > w)
-	            {
-	                x = SectionInset.Left;
-	                leftMargin = SectionInset.Left + frame.Width;
-	            }
-	            else
-	            {
-	                x = leftMargin;
-	                leftMargin += frame.Width;
-	            }
+                if (i == 1)
+                {
+                    var prevFrame = prevLayoutAttributes.Frame;
+                    prevFrame.X = SectionInset.Left;
+                    prevLayoutAttributes.Frame = prevFrame;
+                }
+            }
 
-	            frame.X = x;
-	            layoutAttribute.Frame = frame;
-	            maxY = Math.Max(layoutAttribute.Frame.GetMaxY(), maxY);
-	        }
-
-	        return attributes;
-	    }
+            return attributes;
+        }
     }
 }
